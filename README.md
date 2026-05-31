@@ -1,4 +1,4 @@
-# tabManager
+# privacy-tab-manager
 
 A high-performance, privacy-focused Chrome extension (Manifest V3) that automatically organizes your tabs into native browser tab groups. It keeps your workspace clean, reduces cognitive load, and respects your privacy — with zero remote servers.
 
@@ -75,7 +75,7 @@ The extension uses a **Manifest V3 service worker** architecture:
 2. Open **Chrome** or **Brave** and navigate to `chrome://extensions/`.
 3. Enable **Developer mode** using the toggle in the top-right corner.
 4. Click **Load unpacked**.
-5. Select the `tabManger/` folder (the one containing `manifest.json`).
+5. Select the `privacy-tab-manager/` folder (the one containing `manifest.json`).
 6. The extension is now active. Pin it to your toolbar for quick access.
 
 ---
