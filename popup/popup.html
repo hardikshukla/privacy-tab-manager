@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>tabManager Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+  <script type="module" src="popup.js"></script>
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-container">
+          <div class="logo-tab back-left"></div>
+          <div class="logo-tab back-right"></div>
+          <div class="logo-tab front"></div>
+          <div class="logo-dot"></div>
+        </div>
+        <div class="brand-text">
+          <h1>tabManager</h1>
+          <span class="status-badge" id="statusBadge">Active</span>
+        </div>
+      </div>
+      <button class="icon-btn" id="settingsGearBtn" title="Toggle Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="gear-icon">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"></path>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Collapsible Settings Panel -->
+    <div class="settings-drawer hidden" id="settingsDrawer">
+      <div class="controls-card">
+        <!-- Auto Grouping Toggle -->
+        <div class="control-row">
+          <div class="control-info">
+            <span class="control-title">Auto-Grouping</span>
+            <span class="control-desc">Automatically organize tabs by domain</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="autoGroupToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Auto Collapse Toggle -->
+        <div class="control-row">
+          <div class="control-info">
+            <span class="control-title">Auto-Collapse</span>
+            <span class="control-desc">Collapse inactive tab groups automatically</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="autoCollapseToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Group Single Tabs Toggle -->
+        <div class="control-row">
+          <div class="control-info">
+            <span class="control-title">Group Single Tabs</span>
+            <span class="control-desc">Collect single/unmatched tabs into a "Common" group</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="groupSingletonsToggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Pause Controls -->
+        <div class="control-row pt-border">
+          <div class="control-info">
+            <span class="control-title">Temporary Pause</span>
+            <span class="control-desc">Suspend auto-grouping operations</span>
+          </div>
+          <select id="pauseDurationSelect" class="select-dropdown">
+            <option value="0">Active</option>
+            <option value="30">Pause for 30m</option>
+            <option value="120">Pause for 2h</option>
+            <option value="1440">Pause for 24h</option>
+            <option value="restart">Pause until restart</option>
+          </select>
+        </div>
+
+        <!-- Min Tabs Slider -->
+        <div class="control-row pt-border">
+          <div class="control-info">
+            <span class="control-title">Domain Threshold</span>
+            <span class="control-desc">Minimum tabs before grouping domain (<span id="minTabsValueDisplay">2</span>)</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="minTabsSlider" min="2" max="10" value="2" class="range-slider">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-label">Total Tabs</span>
+        <span class="stat-value" id="totalTabsCount">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Active Groups</span>
+        <span class="stat-value" id="activeGroupsCount">0</span>
+      </div>
+    </div>
+
+    <!-- Active Groups & Rules List -->
+    <section class="section full-height-section">
+      <div class="groups-header-row">
+        <h2 class="section-title">Active Groups & Custom Rules</h2>
+        <button class="icon-link-btn" id="showAddRuleCardBtn" title="Create a custom rule from scratch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Rule
+        </button>
+      </div>
+
+      <div class="groups-list" id="groupsListContainer">
+        <!-- Dynamic content injected here -->
+        <div class="empty-state" id="emptyStateDisplay">
+          <p>No active groups found in this window.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Manual Action -->
+    <div class="action-footer">
+      <button class="btn btn-primary" id="groupNowButton">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 6h16M4 12h16m-7 6h7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Group Tabs Now
+      </button>
+    </div>
+
+    <!-- Footer Privacy -->
+    <footer class="footer-privacy">
+      <svg class="privacy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Local Sandbox Only • 100% Privacy</span>
+    </footer>
+  </div>
+
+  <!-- Template: Inline Edit Modal/Card -->
+  <template id="editRuleTemplate">
+    <div class="edit-rule-card">
+      <div class="edit-rule-header">
+        <span class="edit-title">Customize Group Rule</span>
+      </div>
+      <div class="form-group">
+        <label for="editRuleDomainsInput">Domains (comma-separated)</label>
+        <input type="text" id="editRuleDomainsInput" class="text-input" placeholder="e.g. domain.com, otherdomain.org">
+      </div>
+      <div class="form-group">
+        <label for="editGroupNameInput">Group Name</label>
+        <input type="text" id="editGroupNameInput" class="text-input" placeholder="e.g. Work">
+      </div>
+      <div class="form-group">
+        <label>Group Color</label>
+        <div class="color-picker-grid">
+          <button class="color-dot-btn grey" data-color="grey"></button>
+          <button class="color-dot-btn blue" data-color="blue"></button>
+          <button class="color-dot-btn red" data-color="red"></button>
+          <button class="color-dot-btn yellow" data-color="yellow"></button>
+          <button class="color-dot-btn green" data-color="green"></button>
+          <button class="color-dot-btn pink" data-color="pink"></button>
+          <button class="color-dot-btn purple" data-color="purple"></button>
+          <button class="color-dot-btn cyan" data-color="cyan"></button>
+          <button class="color-dot-btn orange" data-color="orange"></button>
+        </div>
+      </div>
+      <div class="edit-rule-actions">
+        <button class="btn btn-secondary btn-sm" id="cancelEditBtn">Cancel</button>
+        <button class="btn btn-danger btn-sm hidden" id="deleteRuleBtn" title="Delete custom rule for this group">Delete Rule</button>
+        <button class="btn btn-primary btn-sm" id="saveEditBtn">Save Rule</button>
+      </div>
+    </div>
+  </template>
+
+  <!-- Template: Add Rule Card -->
+  <template id="addRuleTemplate">
+    <div class="edit-rule-card add-rule-card">
+      <div class="edit-rule-header">
+        <span class="edit-title">New Grouping Rule</span>
+      </div>
+      <div class="form-group">
+        <label for="addRuleDomainInput">Domains (comma-separated)</label>
+        <input type="text" id="addRuleDomainInput" class="text-input" placeholder="e.g. stackoverflow.com, github.com">
+      </div>
+      <div class="form-group">
+        <label for="addRuleNameInput">Group Name</label>
+        <input type="text" id="addRuleNameInput" class="text-input" placeholder="e.g. Tech Help">
+      </div>
+      <div class="form-group">
+        <label>Group Color</label>
+        <div class="color-picker-grid">
+          <button class="color-dot-btn grey" data-color="grey"></button>
+          <button class="color-dot-btn blue" data-color="blue"></button>
+          <button class="color-dot-btn red" data-color="red"></button>
+          <button class="color-dot-btn yellow" data-color="yellow"></button>
+          <button class="color-dot-btn green" data-color="green"></button>
+          <button class="color-dot-btn pink" data-color="pink"></button>
+          <button class="color-dot-btn purple" data-color="purple"></button>
+          <button class="color-dot-btn cyan" data-color="cyan"></button>
+          <button class="color-dot-btn orange" data-color="orange"></button>
+        </div>
+      </div>
+      <div class="edit-rule-actions">
+        <button class="btn btn-secondary btn-sm" id="cancelAddBtn">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="saveAddBtn">Create Rule</button>
+      </div>
+    </div>
+  </template>
+</body>
+</html>
